@@ -6,5 +6,4 @@ python-dotenv
 aiohttp
 aiofiles
 cryptography
-uvloop
 colorlog
