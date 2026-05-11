@@ -1,10 +1,7 @@
-import uvloop
 import asyncio
 
 from bot.bot import app
 from utils.logger import logger
-
-uvloop.install()
 
 
 async def main():
