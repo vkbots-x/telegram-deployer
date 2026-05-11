@@ -1,1 +1,10 @@
-
+pyrogram
+tgcrypto
+motor
+pymongo
+python-dotenv
+aiohttp
+aiofiles
+cryptography
+uvloop
+colorlog
