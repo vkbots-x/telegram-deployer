@@ -12,3 +12,4 @@ MONGO_URI = getenv("MONGO_URI")
 OWNER_ID = int(getenv("OWNER_ID"))
 
 ENCRYPTION_KEY = getenv("ENCRYPTION_KEY")
+RENDER_URL = getenv("RENDER_URL")
