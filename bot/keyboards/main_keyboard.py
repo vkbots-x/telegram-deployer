@@ -1,10 +1,9 @@
-from pyrogram.types import InlineKeyboardMarkup
-from pyrogram.types import InlineKeyboardButton
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 
 def main_keyboard():
 
-    buttons = [
+    return InlineKeyboardMarkup([
         [
             InlineKeyboardButton(
                 "🚀 Deploy Bot",
@@ -14,21 +13,19 @@ def main_keyboard():
         [
             InlineKeyboardButton(
                 "🔑 API Tokens",
-                callback_data="api_tokens"
+                callback_data="api_tokens_menu"
             )
         ],
         [
             InlineKeyboardButton(
-                "📦 My Projects",
-                callback_data="my_projects"
+                "📁 My Projects",
+                callback_data="projects_menu"
             )
         ],
         [
             InlineKeyboardButton(
-                "🛠 Help",
+                "❓ Help",
                 callback_data="help_menu"
             )
         ]
-    ]
-
-    return InlineKeyboardMarkup(buttons)
+    ])
