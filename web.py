@@ -1,15 +1,10 @@
 from fastapi import FastAPI
-from fastapi.responses import JSONResponse
 
-app = FastAPI()
+web_app = FastAPI()
 
 
-@app.get("/")
-@app.head("/")
-async def home():
-
-    return JSONResponse(
-        {
-            "status": "running"
-        }
-    )
+@web_app.get("/")
+async def root():
+    return {
+        "status": "running"
+    }
