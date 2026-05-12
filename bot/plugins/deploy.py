@@ -29,7 +29,7 @@ async def deploy_button(
     if not user:
 
         return await callback_query.message.reply_text(
-            "User not found."
+            "❌ User not found in database."
         )
 
     github_token = user.get("github_token")
@@ -38,14 +38,16 @@ async def deploy_button(
 
         return await callback_query.message.reply_text(
             """
-❌ GitHub token not set.
+❌ GitHub token not found.
 
 Use:
-/setgithub TOKEN
+/setgithub YOUR_TOKEN
 """
         )
 
     user_states[user_id] = "waiting_repo"
+
+    print(user_states)
 
     await callback_query.message.reply_text(
         """
@@ -79,6 +81,8 @@ async def receive_repo(
 
     state = user_states.get(user_id)
 
+    print("STATE:", state)
+
     if state != "waiting_repo":
         return
 
@@ -86,82 +90,98 @@ async def receive_repo(
 
     user = await get_user(user_id)
 
+    if not user:
+
+        return await message.reply_text(
+            "❌ User not found."
+        )
+
     github_token = user.get("github_token")
+
+    if not github_token:
+
+        return await message.reply_text(
+            "❌ GitHub token missing."
+        )
 
     checking = await message.reply_text(
         "🔍 Checking repository..."
     )
 
-    valid, repo_data = await validate_repo_access(
-        github_token,
-        repo_url
-    )
+    try:
 
-    if not valid:
-
-        user_states.pop(user_id, None)
-
-        return await checking.edit_text(
-            """
-❌ Invalid repository.
-
-Please try again.
-"""
+        valid, repo_data = await validate_repo_access(
+            github_token,
+            repo_url
         )
 
-    authenticated_user = await get_authenticated_user(
-        github_token
-    )
+        if not valid:
 
-    repo_owner = repo_data["owner"]["login"]
+            user_states.pop(user_id, None)
 
-    # USER ALREADY OWNS REPO
+            return await checking.edit_text(
+                """
+❌ Invalid repository.
+"""
+            )
 
-    if authenticated_user.lower() == repo_owner.lower():
+        authenticated_user = await get_authenticated_user(
+            github_token
+        )
 
-        user_states.pop(user_id, None)
+        repo_owner = repo_data["owner"]["login"]
 
-        return await checking.edit_text(
-            f"""
+        # USER ALREADY OWNS REPO
+
+        if authenticated_user.lower() == repo_owner.lower():
+
+            user_states.pop(user_id, None)
+
+            return await checking.edit_text(
+                f"""
 ✅ Repository verified.
 
 📦 Repo:
 {repo_data['full_name']}
 
 You already own this repository.
-
-Deployment flow coming next.
 """
+            )
+
+        # FORK FLOW
+
+        await checking.edit_text(
+            "🍴 Forking repository..."
         )
 
-    # FORK REQUIRED
+        forked = await fork_repository(
+            github_token,
+            repo_url
+        )
 
-    await checking.edit_text(
-        "🍴 Forking repository..."
-    )
+        user_states.pop(user_id, None)
 
-    forked = await fork_repository(
-        github_token,
-        repo_url
-    )
+        if not forked:
 
-    user_states.pop(user_id, None)
-
-    if not forked:
-
-        return await checking.edit_text(
-            """
+            return await checking.edit_text(
+                """
 ❌ Failed to fork repository.
 """
-        )
+            )
 
-    await checking.edit_text(
-        f"""
+        await checking.edit_text(
+            f"""
 ✅ Repository forked successfully.
 
-📦 Original:
+📦 Repo:
 {repo_data['full_name']}
-
-🚀 Ready for deployment flow.
 """
-    )
+        )
+
+    except Exception as e:
+
+        print("DEPLOY ERROR:", e)
+
+        await checking.edit_text(
+            f"❌ Error:\n{e}"
+        )
