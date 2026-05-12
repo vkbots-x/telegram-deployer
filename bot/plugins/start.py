@@ -12,23 +12,18 @@ async def start_command(
     message: Message
 ):
 
-    user_id = message.from_user.id
+    try:
 
-    await create_user(user_id)
+        user_id = message.from_user.id
 
-    text = f"""
-🚀 Welcome to Telegram Deployer
+        await create_user(user_id)
 
-Deploy your bots directly to:
+        await message.reply_text(
+            "Database success"
+        )
 
-• Koyeb
-• Render
-• Heroku
+    except Exception as e:
 
-without opening hosting dashboards.
-"""
-
-    await message.reply_text(
-        text,
-        reply_markup=main_keyboard()
-    )
+        await message.reply_text(
+            f"Error:\n{e}"
+        )
