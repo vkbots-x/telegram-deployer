@@ -28,4 +28,9 @@ def main_keyboard():
                 callback_data="help_menu"
             )
         ]
+        [
+        InlineKeyboardButton(
+    "🚀 Deploy Bot",
+    callback_data="deploy_bot"
+        )]
     ])
