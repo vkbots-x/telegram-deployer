@@ -1,9 +1,3 @@
-import asyncio
-
-asyncio.set_event_loop(
-    asyncio.new_event_loop()
-)
-
 from pyrogram import Client
 
 from utils.config import (
@@ -19,5 +13,6 @@ app = Client(
     bot_token=BOT_TOKEN,
     plugins=dict(
         root="bot.plugins"
-    )
+    ),
+    no_updates=True
 )
