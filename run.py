@@ -1,49 +1,49 @@
-import threading
-
+from pyrogram import Client
+from threading import Thread
 import uvicorn
 
-from pyrogram import idle
+from web import web_app
+from utils.config import (
+    API_ID,
+    API_HASH,
+    BOT_TOKEN
+)
 
-from bot.bot import app
-from utils.logger import logger
-
-from web import app as web_app
+app = Client(
+    "telegram-deployer",
+    api_id=API_ID,
+    api_hash=API_HASH,
+    bot_token=BOT_TOKEN,
+    plugins=dict(root="bot.plugins")
+)
 
 
 def run_web():
-
     uvicorn.run(
         web_app,
         host="0.0.0.0",
-        port=10000,
-        log_level="info"
+        port=10000
     )
 
 
 def main():
 
-    logger.info(
-        "Starting Telegram Deployer Bot..."
-    )
+    Thread(target=run_web).start()
 
-    thread = threading.Thread(
-        target=run_web
+    # IMPORTANT FIX
+    app.delete_webhook(
+        drop_pending_updates=True
     )
-
-    thread.daemon = True
-    thread.start()
 
     app.start()
 
     me = app.get_me()
 
-    logger.info(
+    print(
         f"Bot started as @{me.username}"
     )
 
-    idle()
-
-    app.stop()
+    app.idle()
 
 
 if __name__ == "__main__":
