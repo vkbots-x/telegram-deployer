@@ -1,43 +1,101 @@
 from pyrogram import Client, filters
 
-
-@Client.on_callback_query(filters.regex("^deploy_bot$"))
-async def deploy_bot_callback(client, callback_query):
-
-    await callback_query.answer()
-
-    await callback_query.message.edit_text(
-        "🚀 Deployment system coming soon."
-    )
+from bot.keyboards.main_keyboard import main_keyboard
 
 
-@Client.on_callback_query(filters.regex("^api_tokens$"))
+# ---------------- DEPLOY ---------------- #
+
+@Client.on_callback_query(filters.regex("^deploy_menu$"))
+async def deploy_menu_callback(client, callback_query):
+
+    try:
+
+        await callback_query.answer()
+
+        text = """
+🚀 Deploy Bot
+
+Supported Platforms:
+
+• Render
+• Koyeb
+• Heroku
+
+Deployment system will be available soon.
+"""
+
+        await callback_query.message.edit_text(
+            text=text,
+            reply_markup=main_keyboard()
+        )
+
+    except Exception as e:
+        print(f"DEPLOY CALLBACK ERROR: {e}")
+
+
+# ---------------- API TOKENS ---------------- #
+
+@Client.on_callback_query(filters.regex("^api_tokens_menu$"))
 async def api_tokens_callback(client, callback_query):
 
-    await callback_query.answer()
+    try:
 
-    await callback_query.message.edit_text(
-        "🔑 API token manager coming soon."
-    )
+        await callback_query.answer()
+
+        text = """
+🔑 API Tokens
+
+Available Commands:
+
+/setgithub - Set GitHub token
+/setkoyeb - Set Koyeb token
+
+More providers coming soon.
+"""
+
+        await callback_query.message.edit_text(
+            text=text,
+            reply_markup=main_keyboard()
+        )
+
+    except Exception as e:
+        print(f"API TOKENS CALLBACK ERROR: {e}")
 
 
-@Client.on_callback_query(filters.regex("^my_projects$"))
-async def my_projects_callback(client, callback_query):
+# ---------------- PROJECTS ---------------- #
 
-    await callback_query.answer()
+@Client.on_callback_query(filters.regex("^projects_menu$"))
+async def projects_callback(client, callback_query):
 
-    await callback_query.message.edit_text(
-        "📁 Project dashboard coming soon."
-    )
+    try:
+
+        await callback_query.answer()
+
+        text = """
+📁 My Projects
+
+No deployed projects found.
+"""
+
+        await callback_query.message.edit_text(
+            text=text,
+            reply_markup=main_keyboard()
+        )
+
+    except Exception as e:
+        print(f"PROJECTS CALLBACK ERROR: {e}")
 
 
-@Client.on_callback_query(filters.regex("^help$"))
+# ---------------- HELP ---------------- #
+
+@Client.on_callback_query(filters.regex("^help_menu$"))
 async def help_callback(client, callback_query):
 
-    await callback_query.answer()
+    try:
 
-    await callback_query.message.edit_text(
-        """
+        await callback_query.answer()
+
+        text = """
 📚 Available Commands
 
 /start - Start bot
@@ -45,5 +103,14 @@ async def help_callback(client, callback_query):
 
 /setgithub - Set GitHub token
 /setkoyeb - Set Koyeb token
+
+More deployment features coming soon.
 """
-    )
+
+        await callback_query.message.edit_text(
+            text=text,
+            reply_markup=main_keyboard()
+        )
+
+    except Exception as e:
+        print(f"HELP CALLBACK ERROR: {e}")
