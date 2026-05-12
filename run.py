@@ -1,57 +1,50 @@
-import os
 import threading
-import logging
 
-from fastapi import FastAPI
 import uvicorn
 
-from pyrogram import Client
+from pyrogram import idle
 
-from utils.config import API_ID, API_HASH, BOT_TOKEN
+from bot.bot import app
+from utils.logger import logger
 
-# ---------------- LOGGING ---------------- #
-
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s"
-)
-
-# ---------------- WEB SERVER ---------------- #
-
-web = FastAPI()
+from web import app as web_app
 
 
-@web.get("/")
-async def root():
-    return {"status": "Bot is running"}
+def run_web():
 
-
-def start_web():
     uvicorn.run(
-        web,
+        web_app,
         host="0.0.0.0",
-        port=int(os.environ.get("PORT", 10000))
+        port=10000,
+        log_level="info"
     )
 
 
-# ---------------- TELEGRAM BOT ---------------- #
+def main():
 
-bot = Client(
-    "telegram-deployer",
-    api_id=API_ID,
-    api_hash=API_HASH,
-    bot_token=BOT_TOKEN,
-    plugins=dict(root="bot.plugins")
-)
+    logger.info(
+        "Starting Telegram Deployer Bot..."
+    )
 
-# ---------------- MAIN ---------------- #
+    thread = threading.Thread(
+        target=run_web
+    )
+
+    thread.daemon = True
+    thread.start()
+
+    app.start()
+
+    me = app.get_me()
+
+    logger.info(
+        f"Bot started as @{me.username}"
+    )
+
+    idle()
+
+    app.stop()
+
 
 if __name__ == "__main__":
-
-    print("Starting Telegram Deployer Bot...")
-
-    # Start web server thread
-    threading.Thread(target=start_web).start()
-
-    # Start telegram bot
-    bot.run()
+    main()
