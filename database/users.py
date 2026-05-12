@@ -42,3 +42,15 @@ async def update_user_token(
             }
         }
     )
+
+
+async def update_user_state(
+    user_id: int,
+    data: dict
+):
+    await users_collection.update_one(
+        {"user_id": user_id},
+        {
+            "$set": data
+        }
+    )
