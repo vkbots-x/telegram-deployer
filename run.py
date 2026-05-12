@@ -1,4 +1,3 @@
-import asyncio
 import threading
 
 import uvicorn
@@ -21,26 +20,11 @@ def run_web():
     )
 
 
-async def run_bot():
+def main():
 
     logger.info(
         "Starting Telegram Deployer Bot..."
     )
-
-    await app.start()
-
-    me = await app.get_me()
-
-    logger.info(
-        f"Bot started as @{me.username}"
-    )
-
-    await idle()
-
-    await app.stop()
-
-
-def main():
 
     web_thread = threading.Thread(
         target=run_web
@@ -49,9 +33,17 @@ def main():
     web_thread.daemon = True
     web_thread.start()
 
-    asyncio.run(
-        run_bot()
+    app.start()
+
+    me = app.get_me()
+
+    logger.info(
+        f"Bot started as @{me.username}"
     )
+
+    idle()
+
+    app.stop()
 
 
 if __name__ == "__main__":
