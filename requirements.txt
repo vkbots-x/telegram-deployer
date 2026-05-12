@@ -7,5 +7,3 @@ aiohttp
 aiofiles
 cryptography
 colorlog
-fastapi
-uvicorn
