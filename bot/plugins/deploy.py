@@ -59,7 +59,17 @@ https://github.com/username/repository
     await callback_query.answer()
 
 
-@Client.on_message(filters.text)
+@Client.on_message(
+    filters.text
+    & ~filters.command(
+        [
+            "start",
+            "help",
+            "setgithub",
+            "setkoyeb"
+        ]
+    )
+)
 async def receive_repo(
     client: Client,
     message: Message
