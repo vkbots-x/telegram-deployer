@@ -1,50 +1,45 @@
-import threading
+import asyncio
 
 import uvicorn
 
-from pyrogram import idle
-
 from bot.bot import app
+from web import web_app
+
 from utils.logger import logger
+from utils.config import RENDER_URL
 
-from web import app as web_app
 
+async def main():
 
-def run_web():
+    logger.info(
+        "Starting Telegram Deployer..."
+    )
 
-    uvicorn.run(
+    await app.start()
+
+    webhook_url = (
+        f"{RENDER_URL}/webhook"
+    )
+
+    await app.set_webhook(
+        webhook_url
+    )
+
+    logger.info(
+        f"Webhook set: {webhook_url}"
+    )
+
+    config = uvicorn.Config(
         web_app,
         host="0.0.0.0",
         port=10000,
         log_level="info"
     )
 
+    server = uvicorn.Server(config)
 
-def main():
-
-    logger.info(
-        "Starting Telegram Deployer Bot..."
-    )
-
-    thread = threading.Thread(
-        target=run_web
-    )
-
-    thread.daemon = True
-    thread.start()
-
-    app.start()
-
-    me = app.get_me()
-
-    logger.info(
-        f"Bot started as @{me.username}"
-    )
-
-    idle()
-
-    app.stop()
+    await server.serve()
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
