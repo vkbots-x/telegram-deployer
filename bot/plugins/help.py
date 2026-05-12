@@ -1,13 +1,9 @@
-from pyrogram import Client
-from pyrogram import filters
+from pyrogram import Client, filters
 from pyrogram.types import Message
 
 
 @Client.on_message(filters.command("help"))
-async def help_command(
-    client: Client,
-    message: Message
-):
+async def help_command(client: Client, message: Message):
 
     text = """
 📚 Available Commands
@@ -17,8 +13,6 @@ async def help_command(
 
 /setgithub - Set GitHub token
 /setkoyeb - Set Koyeb token
-
-More deployment features coming soon.
 """
 
     await message.reply_text(text)
